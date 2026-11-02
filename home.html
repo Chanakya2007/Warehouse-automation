@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intelligent Warehouse Automation</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #111221;
+    color: #e9f7ff;
+    min-height: 100vh;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.page {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 25px 4%;
+}
+
+.page.active {
+    display: block;
+}
+
+/* HEADER */
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    color: #00d9ff;
+    font-size: 32px;
+    text-shadow: 0 0 10px rgba(0,217,255,0.3);
+}
+
+.header p {
+    color: #777b91;
+    margin-top: 7px;
+}
+
+/* NAVIGATION */
+
+.navbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: #101f38;
+    color: #00cfff;
+    border: 1px solid #006d9c;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+    background: #00cfff;
+    color: #06121f;
+}
+
+/* DASHBOARD CARDS */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #09213c;
+    border: 1px solid #073b62;
+    border-radius: 9px;
+    padding: 22px;
+    text-align: center;
+}
+
+.card .number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #00d9ff;
+    margin-bottom: 7px;
+}
+
+.card:nth-child(2) .number {
+    color: #00ff91;
+}
+
+.card:nth-child(3) .number {
+    color: #00eaff;
+}
+
+.card:nth-child(4) .number {
+    color: #c875ff;
+}
+
+.card p {
+    color: #85899d;
+}
+
+/* SECTION */
+
+.section-title {
+    color: #00e9a0;
+    font-size: 20px;
+    margin: 25px 0 12px;
+}
+
+/* TABLE */
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #09213c;
+    border: 1px solid #073b62;
+}
+
+th {
+    background: #00649a;
+    color: #00d9ff;
+    padding: 13px;
+    text-align: left;
+    font-size: 14px;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #14304c;
+    color: #dce7ef;
+    font-size: 14px;
+}
+
+tr:hover {
+    background: #102b47;
+}
+
+.status {
+    color: #00ff72;
+    font-weight: bold;
+}
+
+.zone-a {
+    color: #00d9ff;
+}
+
+.zone-b {
+    color: #ffb300;
+}
+
+.zone-c {
+    color: #ff4fff;
+}
+
+/* SCANNER */
+
+.scanner-page {
+    max-width: 850px;
+    margin: auto;
+}
+
+.scanner-title {
+    text-align: center;
+    color: #00d9ff;
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.scanner-subtitle {
+    text-align: center;
+    color: #777b91;
+    margin-bottom: 25px;
+}
+
+.camera-box {
+    width: 100%;
+    height: 430px;
+    border: 2px solid #00d9ff;
+    border-radius: 10px;
+    background: #111221;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.camera-box::before {
+    content: "";
+    position: absolute;
+    width: 75%;
+    height: 65%;
+    border: 1px dashed #005d82;
+    border-radius: 5px;
+}
+
+.camera-text {
+    color: #454b62;
+    z-index: 1;
+    text-align: center;
+}
+
+.scan-btn {
+    display: block;
+    margin: 25px auto;
+    padding: 15px 30px;
+    background: #00d9ff;
+    color: #06121f;
+    border: none;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.scan-btn:hover {
+    background: #00ffdc;
+}
+
+/* PROCESSING */
+
+.processing {
+    display: none;
+    text-align: center;
+    color: #ffae00;
+    margin: 15px;
+}
+
+.spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 3px solid #555;
+    border-top: 3px solid #00d9ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* RESULT */
+
+.result {
+    display: none;
+    background: #08233e;
+    border: 1px solid #005d82;
+    border-radius: 10px;
+    padding: 22px;
+    margin-top: 20px;
+}
+
+.result h3 {
+    color: #00ff91;
+    margin-bottom: 15px;
+}
+
+.result-row {
+    margin: 10px 0;
+    color: #c8d6df;
+}
+
+.result-row span {
+    color: #00d9ff;
+    font-weight: bold;
+}
+
+.back-btn {
+    display: block;
+    margin: 20px auto 0;
+    padding: 11px 25px;
+    background: transparent;
+    border: 1px solid #00d9ff;
+    color: #00d9ff;
+    border-radius: 7px;
+}
+
+/* INVENTORY */
+
+.inventory-container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.inventory-title {
+    text-align: center;
+    color: #00d9ff;
+    font-size: 30px;
+    margin-bottom: 25px;
+}
+
+.rack {
+    background: #09213c;
+    border: 1px solid #073b62;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.rack-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #e5f7ff;
+}
+
+.progress-bg {
+    height: 18px;
+    background: #44443d;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #00ff85;
+    border-radius: 10px;
+    transition: width 1s;
+}
+
+.rack-info {
+    margin-top: 8px;
+    color: #8894a3;
+    font-size: 14px;
+}
+
+.low {
+    color: #00ff91;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 800px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .camera-box {
+        height: 350px;
+    }
+}
+
+@media(max-width: 500px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .page {
+        padding: 20px 3%;
+    }
+
+    th, td {
+        font-size: 12px;
+        padding: 9px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= DASHBOARD ================= -->
+
+<div id="dashboard" class="page active">
+
+    <div class="header">
+        <h1>🏭 Intelligent Warehouse Automation</h1>
+        <p>Real-time monitoring dashboard · Auto-refreshes every 5 seconds</p>
+    </div>
+
+    <div class="navbar">
+        <button class="nav-btn active" onclick="showPage('dashboard')">
+            📦 Scan Package
+        </button>
+
+        <button class="nav-btn" onclick="showPage('dashboard')">
+            🏠 Dashboard
+        </button>
+
+        <button class="nav-btn" onclick="showPage('inventory')">
+            📊 Inventory
+        </button>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <div class="number">6</div>
+            <p>Total Packages</p>
+        </div>
+
+        <div class="card">
+            <div class="number">6</div>
+            <p>Delivered</p>
+        </div>
+
+        <div class="card">
+            <div class="number">6</div>
+            <p>Robot Events</p>
+        </div>
+
+        <div class="card">
+            <div class="number">0</div>
+            <p>In Progress</p>
+        </div>
+
+    </div>
+
+    <div class="section-title">📦 Packages</div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Package ID</th>
+                    <th>Category</th>
+                    <th>Zone</th>
+                    <th>Size</th>
+                    <th>Supplier</th>
+                    <th>Rack</th>
+                    <th>Status</th>
+                    <th>Scanned At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>PKG-202409-0007</td>
+                    <td>CLOTHING</td>
+                    <td class="zone-c">Zone C</td>
+                    <td>LARGE</td>
+                    <td>SUP-003</td>
+                    <td>RACK-C-L</td>
+                    <td class="status">DELIVERED</td>
+                    <td>2026-04-02 20:10:38</td>
+                </tr>
+
+                <tr>
+                    <td>PKG-202409-0004</td>
+                    <td>FURNITURE</td>
+                    <td class="zone-b">Zone B</td>
+                    <td>LARGE</td>
+                    <td>SUP-002</td>
+                    <td>RACK-B-L</td>
+                    <td class="status">DELIVERED</td>
+                    <td>2026-04-01 20:38:32</td>
+                </tr>
+
+                <tr>
+                    <td>PKG-202409-0006</td>
+                    <td>BOOKS</td>
+                    <td class="zone-b">Zone B</td>
+                    <td>SMALL</td>
+                    <td>SUP-002</td>
+                    <td>RACK-B-S</td>
+                    <td class="status">DELIVERED</td>
+                    <td>2026-03-28 11:52:17</td>
+                </tr>
+
+                <tr>
+                    <td>PKG-202409-0003</td>
+                    <td>FOOD</td>
+                    <td class="zone-a">Zone A</td>
+                    <td>MEDIUM</td>
+                    <td>SUP-001</td>
+                    <td>RACK-A-M</td>
+                    <td class="status">DELIVERED</td>
+                    <td>2026-03-28 11:46:45</td>
+                </tr>
+
+                <tr>
+                    <td>PKG-202409-0002</td>
+                    <td>MEDICINE</td>
+                    <td class="zone-a">Zone A</td>
+                    <td>SMALL</td>
+                    <td>SUP-001</td>
+                    <td>RACK-A-S</td>
+                    <td class="status">DELIVERED</td>
+                    <td>2026-03-28 11:30:01</td>
+                </tr>
+
+                <tr>
+                    <td>PKG-202409-0001</td>
+                    <td>ELECTRONICS</td>
+                    <td class="zone-a">Zone A</td>
+                    <td>LARGE</td>
+                    <td>SUP-001</td>
+                    <td>RACK-A-L</td>
+                    <td class="status">DELIVERED</td>
+                    <td>2026-03-27 21:55:11</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="section-title">🤖 Robot Events</div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Event ID</th>
+                    <th>Package ID</th>
+                    <th>Rack</th>
+                    <th>Distance (m)</th>
+                    <th>Status</th>
+                    <th>Dispatched At</th>
+                    <th>Completed At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>EVT-001</td>
+                    <td>PKG-202409-0007</td>
+                    <td>RACK-C-L</td>
+                    <td>36m</td>
+                    <td class="status">COMPLETED</td>
+                    <td>20:10:40</td>
+                    <td>20:11:16</td>
+                </tr>
+
+                <tr>
+                    <td>EVT-002</td>
+                    <td>PKG-202409-0004</td>
+                    <td>RACK-B-L</td>
+                    <td>28m</td>
+                    <td class="status">COMPLETED</td>
+                    <td>20:38:35</td>
+                    <td>20:39:02</td>
+                </tr>
+
+                <tr>
+                    <td>EVT-003</td>
+                    <td>PKG-202409-0006</td>
+                    <td>RACK-B-S</td>
+                    <td>24m</td>
+                    <td class="status">COMPLETED</td>
+                    <td>11:52:20</td>
+                    <td>11:52:44</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ================= SCANNER PAGE ================= -->
+
+<div id="scanner" class="page">
+
+    <div class="scanner-page">
+
+        <h1 class="scanner-title">📷 Package Scanner</h1>
+
+        <p class="scanner-subtitle">
+            Hold QR code in front of camera then click Scan
+        </p>
+
+        <div class="camera-box">
+
+            <div class="camera-text">
+                📷<br><br>
+                Camera / QR Scanner Area
+            </div>
+
+        </div>
+
+        <button class="scan-btn" onclick="scanPackage()">
+            🔍 Scan & Process Package
+        </button>
+
+        <div id="processing" class="processing">
+            <span class="spinner"></span>
+            Processing... robot is moving to rack
+        </div>
+
+        <div id="result" class="result">
+
+            <h3>✅ Package processed successfully!</h3>
+
+            <div class="result-row">
+                📦 Package ID:
+                <span>PKG-202409-0008</span>
+            </div>
+
+            <div class="result-row">
+                🏷️ Category:
+                <span>TOYS</span>
+            </div>
+
+            <div class="result-row">
+                🏢 Supplier:
+                <span>SUP-003</span>
+            </div>
+
+            <div class="result-row">
+                📍 Zone:
+                <span>Zone C</span>
+            </div>
+
+            <div class="result-row">
+                📏 Size:
+                <span>LARGE</span>
+            </div>
+
+            <div class="result-row">
+                🗄️ Rack:
+                <span>RACK-C-L</span>
+            </div>
+
+            <div class="result-row">
+                🛣️ Distance:
+                <span>36m</span>
+            </div>
+
+            <div class="result-row">
+                ⏱️ Travel time:
+                <span>36 seconds</span>
+            </div>
+
+            <div class="result-row">
+                🚚 Status:
+                <span>DELIVERED</span>
+            </div>
+
+            <button class="back-btn" onclick="showPage('dashboard')">
+                ← Back to Dashboard
+            </button>
+
+        </div>
+
+        <button class="back-btn" onclick="showPage('dashboard')">
+            ← Back to Dashboard
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= INVENTORY PAGE ================= -->
+
+<div id="inventory" class="page">
+
+    <div class="inventory-container">
+
+        <h1 class="inventory-title">📊 Warehouse Inventory</h1>
+
+        <div class="rack">
+
+            <div class="rack-title">
+                RACK-A-L | Zone A | LARGE
+            </div>
+
+            <div class="progress-bg">
+                <div class="progress" style="width: 7%;"></div>
+            </div>
+
+            <div class="rack-info">
+                1 / 15 packages
+                <br>
+                Status:
+                <span class="low">Low</span>
+            </div>
+
+        </div>
+
+
+        <div class="rack">
+
+            <div class="rack-title">
+                RACK-A-M | Zone A | MEDIUM
+            </div>
+
+            <div class="progress-bg">
+                <div class="progress" style="width: 3%;"></div>
+            </div>
+
+            <div class="rack-info">
+                1 / 30 packages
+                <br>
+                Status:
+                <span class="low">Low</span>
+            </div>
+
+        </div>
+
+
+        <div class="rack">
+
+            <div class="rack-title">
+                RACK-A-S | Zone A | SMALL
+            </div>
+
+            <div class="progress-bg">
+                <div class="progress" style="width: 2%;"></div>
+            </div>
+
+            <div class="rack-info">
+                1 / 50 packages
+                <br>
+                Status:
+                <span class="low">Low</span>
+            </div>
+
+        </div>
+
+
+        <div class="rack">
+
+            <div class="rack-title">
+                RACK-B-L | Zone B | LARGE
+            </div>
+
+            <div class="progress-bg">
+                <div class="progress" style="width: 7%;"></div>
+            </div>
+
+            <div class="rack-info">
+                1 / 15 packages
+                <br>
+                Status:
+                <span class="low">Low</span>
+            </div>
+
+        </div>
+
+
+        <div class="rack">
+
+            <div class="rack-title">
+                RACK-B-M | Zone B | MEDIUM
+            </div>
+
+            <div class="progress-bg">
+                <div class="progress" style="width: 0%;"></div>
+            </div>
+
+            <div class="rack-info">
+                0 / 30 packages
+                <br>
+                Status:
+                <span class="low">Low</span>
+            </div>
+
+        </div>
+
+
+        <div class="rack">
+
+            <div class="rack-title">
+                RACK-B-S | Zone B | SMALL
+            </div>
+
+            <div class="progress-bg">
+                <div class="progress" style="width: 5%;"></div>
+            </div>
+
+            <div class="rack-info">
+                2 / 40 packages
+                <br>
+                Status:
+                <span class="low">Low</span>
+            </div>
+
+        </div>
+
+
+        <button class="back-btn" onclick="showPage('dashboard')">
+            ← Back to Dashboard
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ================= PAGE NAVIGATION ================= */
+
+function showPage(pageName) {
+
+    document.querySelectorAll(".page").forEach(function(page) {
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageName).classList.add("active");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* ================= SCAN PACKAGE ================= */
+
+/*
+   When the Scan Package button is clicked,
+   open the scanner page.
+*/
+
+document.querySelectorAll(".nav-btn").forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+        if (button.innerText.includes("Scan Package")) {
+            showPage("scanner");
+        }
+
+    });
+
+});
+
+
+function scanPackage() {
+
+    const processing = document.getElementById("processing");
+    const result = document.getElementById("result");
+
+    result.style.display = "none";
+
+    processing.style.display = "block";
+
+    setTimeout(function() {
+
+        processing.style.display = "none";
+
+        result.style.display = "block";
+
+    }, 1800);
+
+}
+
+
+/* ================= AUTO REFRESH DEMO ================= */
+
+/*
+   Small dashboard animation.
+   In the real project this can later be replaced
+   with data coming from SQL Server.
+*/
+
+setInterval(function() {
+
+    const numbers = document.querySelectorAll(".card .number");
+
+    if (numbers.length > 0) {
+
+        numbers[0].style.opacity = "0.7";
+
+        setTimeout(function() {
+            numbers[0].style.opacity = "1";
+        }, 200);
+
+    }
+
+}, 5000);
+
+</script>
+
+</body>
+</html>
